@@ -78,6 +78,29 @@ public class ReservationServiceTest {
     }
 
     @Test
+    public void bookReservation_applyDepositReservation() {
+
+        GuestDTO expectedGuestDTO = MockTests.createGuestDTO();
+        TennisCourtDTO expectedTennisCourtDTO = MockTests.createTennisCourtDTO();
+        ScheduleDTO expectedScheduleDTO = MockTests.createScheduleDTO();
+        Reservation expectedReservation = MockTests.createReservation();
+        List<Reservation> reservations = new ArrayList<Reservation>();
+        reservations.add(expectedReservation);
+        CreateReservationRequestDTO createReservationRequestDTO = MockTests.createCreateReservationRequestDTO();
+
+        Mockito.when(scheduleService.findSchedule(Mockito.anyLong())).thenReturn(expectedScheduleDTO);
+        Mockito.when(guestService.findGuestById(Mockito.anyLong())).thenReturn(expectedGuestDTO);
+        Mockito.when(reservationRepository.saveAndFlush(Mockito.any())).thenReturn(expectedReservation);
+
+        ReservationDTO reservation = reservationService.bookReservation(createReservationRequestDTO);
+
+        Assert.assertEquals(expectedTennisCourtDTO.getId(), reservation.getSchedule().getTennisCourt().getId());
+        Assert.assertEquals(expectedScheduleDTO.getId(), reservation.getSchedule().getId());
+        Assert.assertEquals(expectedReservation.getId(), reservation.getId());
+        Assert.assertEquals(expectedReservation.getRefundValue(), reservation.getRefundValue());
+    }
+
+    @Test
     public void bookReservation_ScheduleAlreadyBooked() {
 
         GuestDTO expectedGuestDTO = MockTests.createGuestDTO();
