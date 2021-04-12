@@ -22,7 +22,10 @@ public class MockTests {
     }
 
     public static Guest createGuest(){
-        return new Guest("Guest #1");
+        Guest guest = new Guest();
+        guest.setId(1L);
+        guest.setName("Guest #1");
+        return guest;
     }
 
     public static TennisCourtDTO createTennisCourtDTO(){

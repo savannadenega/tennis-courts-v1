@@ -15,9 +15,7 @@ public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
     private final ScheduleMapper scheduleMapper;
-    //private final TennisCourtService tennisCourtService;
     private final TennisCourtRepository tennisCourtRepository;
-    private final TennisCourtMapper tennisCourtMapper;
 
     public ScheduleDTO addSchedule(Long tennisCourtId, CreateScheduleRequestDTO createScheduleRequestDTO) {
         List<ScheduleDTO> schedulesByTennisCourtId = findSchedulesByTennisCourtId(tennisCourtId);

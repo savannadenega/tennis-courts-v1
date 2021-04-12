@@ -2,9 +2,7 @@ package com.tenniscourts.schedules;
 
 import com.tenniscourts.exceptions.EntityNotFoundException;
 import com.tenniscourts.mock.MockTests;
-import com.tenniscourts.tenniscourts.TennisCourtDTO;
-import com.tenniscourts.tenniscourts.TennisCourtMapper;
-import com.tenniscourts.tenniscourts.TennisCourtService;
+import com.tenniscourts.tenniscourts.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mapstruct.factory.Mappers;
@@ -15,6 +13,9 @@ import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -28,7 +29,7 @@ public class ScheduleServiceTest {
     ScheduleRepository scheduleRepository;
 
     @Mock
-    TennisCourtService tennisCourtService;
+    TennisCourtRepository tennisCourtRepository;
 
     @InjectMocks
     ScheduleService scheduleService;
@@ -42,13 +43,13 @@ public class ScheduleServiceTest {
     @Test
     public void addSchedule() {
 
-        TennisCourtDTO expectedTennisCourtDTO = MockTests.createTennisCourtDTO();
+        TennisCourt expectedTennisCourt = MockTests.createTennisCourt();
         CreateScheduleRequestDTO createScheduleRequestDTO = MockTests.createCreateScheduleRequestDTO();
-        Mockito.when(tennisCourtService.findTennisCourtById(Mockito.anyLong())).thenReturn(expectedTennisCourtDTO);
+        Mockito.when(tennisCourtRepository.findById(Mockito.anyLong())).thenReturn(java.util.Optional.of(expectedTennisCourt));
 
-        ScheduleDTO scheduleDTO = scheduleService.addSchedule(expectedTennisCourtDTO.getId(), createScheduleRequestDTO);
+        ScheduleDTO scheduleDTO = scheduleService.addSchedule(expectedTennisCourt.getId(), createScheduleRequestDTO);
 
-        assertEquals(expectedTennisCourtDTO.getId(), scheduleDTO.getTennisCourt().getId());
+        assertEquals(expectedTennisCourt.getId(), scheduleDTO.getTennisCourt().getId());
         assertNotNull(scheduleDTO.getStartDateTime());
         assertNotNull(scheduleDTO.getEndDateTime());
 
@@ -57,12 +58,16 @@ public class ScheduleServiceTest {
     @Test
     public void addSchedule_ScheduleAlreadyBookedForTennisCourt() {
 
-        TennisCourtDTO expectedTennisCourtDTO = MockTests.createTennisCourtDTO();
+        TennisCourt expectedTennisCourt = MockTests.createTennisCourt();
         CreateScheduleRequestDTO createScheduleRequestDTO = MockTests.createCreateScheduleRequestDTO();
-        Mockito.when(tennisCourtService.findTennisCourtWithSchedulesById(Mockito.anyLong())).thenReturn(expectedTennisCourtDTO);
+
+        Schedule schedule = MockTests.createSchedule();
+        List<Schedule> scheduleList = new ArrayList<>();
+        scheduleList.add(schedule);
+        Mockito.when(scheduleRepository.findByTennisCourt_IdOrderByStartDateTime(Mockito.anyLong())).thenReturn(scheduleList);
 
         Exception exception = assertThrows(EntityNotFoundException.class, () -> {
-            ScheduleDTO scheduleDTO = scheduleService.addSchedule(expectedTennisCourtDTO.getId(), createScheduleRequestDTO);
+            ScheduleDTO scheduleDTO = scheduleService.addSchedule(expectedTennisCourt.getId(), createScheduleRequestDTO);
         });
 
         String expectedMessage = "Schedule already booked for Tennis Court.";
