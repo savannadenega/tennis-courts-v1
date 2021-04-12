@@ -12,8 +12,8 @@ import java.util.List;
 public class TennisCourtService {
 
     private final TennisCourtRepository tennisCourtRepository;
-    private final ScheduleService scheduleService;
     private final TennisCourtMapper tennisCourtMapper;
+    private final ScheduleService scheduleService;
 
     public TennisCourtDTO addTennisCourt(TennisCourtDTO tennisCourt) {
         return tennisCourtMapper.map(tennisCourtRepository.saveAndFlush(tennisCourtMapper.map(tennisCourt)));

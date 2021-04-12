@@ -38,7 +38,7 @@ public class ReservationService {
         }
 
         ScheduleDTO scheduleDTO = scheduleService.findSchedule(createReservationRequestDTO.getScheduleId());
-        GuestDTO guestDTO = guestService.findGuestById(createReservationRequestDTO.getScheduleId());
+        GuestDTO guestDTO = guestService.findGuestById(createReservationRequestDTO.getGuestId());
 
         Reservation reservation = new Reservation();
         reservation.setReservationStatus(ReservationStatus.READY_TO_PLAY);

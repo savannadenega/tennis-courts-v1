@@ -15,18 +15,19 @@ public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
     private final ScheduleMapper scheduleMapper;
-    private final TennisCourtService tennisCourtService;
+    //private final TennisCourtService tennisCourtService;
+    private final TennisCourtRepository tennisCourtRepository;
     private final TennisCourtMapper tennisCourtMapper;
 
     public ScheduleDTO addSchedule(Long tennisCourtId, CreateScheduleRequestDTO createScheduleRequestDTO) {
-        TennisCourtDTO tennisCourtWithSchedulesById = tennisCourtService.findTennisCourtWithSchedulesById(tennisCourtId);
-        if(Objects.nonNull(tennisCourtWithSchedulesById)){
+        List<ScheduleDTO> schedulesByTennisCourtId = findSchedulesByTennisCourtId(tennisCourtId);
+        if(Objects.requireNonNull(schedulesByTennisCourtId).size() > 0){
             throw new EntityNotFoundException("Schedule already booked for Tennis Court.");
         }
 
-        TennisCourtDTO tennisCourt = tennisCourtService.findTennisCourtById(tennisCourtId);
+        TennisCourt tennisCourt = tennisCourtRepository.findById(tennisCourtId).get();
         Schedule schedule = scheduleMapper.map(createScheduleRequestDTO);
-        schedule.setTennisCourt(tennisCourtMapper.map(tennisCourt));
+        schedule.setTennisCourt(tennisCourt);
         schedule.setEndDateTime(createScheduleRequestDTO.getStartDateTime().plusHours(1));
         return scheduleMapper.map(schedule);
     }
