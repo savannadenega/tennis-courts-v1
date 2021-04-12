@@ -22,7 +22,9 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode
 @EntityListeners(CustomAuditEntityListener.class)
 public class BaseEntity<ID> implements Serializable {
+    private static final long serialVersionUID = 1L;
 
+    @SuppressWarnings("JpaAttributeTypeInspection")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private ID id;
